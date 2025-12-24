@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>prismaX Queue Notifier Options</title>
+    <style>
+        :root {
+            --border-color: #e0e0e0;
+            --accent-color: #2962ff;
+            --bg-soft: #fafafa;
+            --text-muted: #666;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 16px;
+            line-height: 1.5;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .subtitle {
+            margin: 0 0 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 14px 16px 16px;
+            margin-top: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0 0 12px;
+        }
+
+        .field {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+        }
+
+        .field-label {
+            flex: 0 0 180px;
+            font-size: 13px;
+        }
+
+        .field-input {
+            flex: 1 1 auto;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            max-width: 360px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        input[type="checkbox"] {
+            transform: translateY(1px);
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .helper {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .actions {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        button {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-color);
+            background: var(--accent-color);
+            color: white;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        #status {
+            font-size: 12px;
+            color: green;
+        }
+
+        .channel-disabled {
+            opacity: 0.7;
+        }
+
+        .channel-disabled input[type="text"],
+        .channel-disabled input[type="number"],
+        .channel-disabled input[type="checkbox"] {
+            cursor: default;
+        }
+
+        .channel-disabled .field-input input[type="text"],
+        .channel-disabled .field-input input[type="number"] {
+            background: var(--bg-soft);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>prismaX Queue Notifier</h1>
+    <p class="subtitle">
+        Configure when and how you want to be notified. You can toggle the extension on/off from the browser popup.
+    </p>
+
+    <div class="card">
+        <h2 class="card-title">When should we notify you?</h2>
+        <p class="card-subtitle">
+            You’ll get notified when your position in the queue is within the threshold below.
+        </p>
+
+        <div class="field">
+            <div class="field-label">
+                Position threshold
+            </div>
+            <div class="field-input">
+                <input id="positionThreshold" type="number" min="1" value="3" />
+                <div class="helper">
+                    Notify when your position is less than or equal to this number.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="chromeCard">
+        <div class="card-header">
+            <h2 class="card-title">Chrome notifications</h2>
+            <label class="checkbox-label">
+                <input id="chromeEnabled" type="checkbox" />
+                Enable
+            </label>
+        </div>
+        <p class="card-subtitle">
+            Native desktop toasts from your browser.
+        </p>
+
+        <div class="field">
+            <div class="field-label">
+                Sound
+            </div>
+            <div class="field-input">
+                <label class="checkbox-label">
+                    <input id="soundEnabled" type="checkbox" />
+                    Play a sound when notifying (if available)
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="discordCard">
+        <div class="card-header">
+            <h2 class="card-title">Discord notifications</h2>
+            <label class="checkbox-label">
+                <input id="discordEnabled" type="checkbox" />
+                Enable
+            </label>
+        </div>
+        <p class="card-subtitle">
+            Send a message to a Discord channel via webhook.
+        </p>
+
+        <div class="field">
+            <div class="field-label">
+                Webhook URL
+            </div>
+            <div class="field-input">
+                <input id="discordWebhookUrl" type="text" />
+                <div class="helper">
+                    Paste a Discord webhook URL (Server Settings → Integrations → Webhooks).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="telegramCard">
+        <div class="card-header">
+            <h2 class="card-title">Telegram notifications</h2>
+            <label class="checkbox-label">
+                <input id="telegramEnabled" type="checkbox" />
+                Enable
+            </label>
+        </div>
+        <p class="card-subtitle">
+            Send a message via a Telegram bot.
+        </p>
+
+        <div class="field">
+            <div class="field-label">
+                Bot token
+            </div>
+            <div class="field-input">
+                <input id="telegramBotToken" type="text" />
+                <div class="helper">
+                    Token from <code>@BotFather</code>, e.g. <code>1234567:ABC…</code>.
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">
+                Chat ID
+            </div>
+            <div class="field-input">
+                <input id="telegramChatId" type="text" />
+                <div class="helper">
+                    Numeric chat ID to send messages to.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button id="save">Save</button>
+        <span id="status"></span>
+    </div>
+</div>
+
+<script src="options.js"></script>
+</body>
+</html>

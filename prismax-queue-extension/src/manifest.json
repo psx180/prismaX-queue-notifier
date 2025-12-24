@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "prismaX Queue Notifier",
+  "version": "0.1.0",
+  "description": "Notifies you when your turn is coming up on prismaX tele-op robotic arms.",
+  "permissions": [
+    "notifications",
+    "storage",
+    "debugger",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://app.prismax.ai/*",
+    "https://discord.com/api/*",
+    "https://discordapp.com/api/*",
+    "https://api.telegram.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "amatches": ["https://app.prismax.ai/tele-op/*"],
+      "js": ["contentScript.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["https://app.prismax.ai/*"]
+    }
+  ],
+  "options_page": "options.html",
+  "action": {
+    "default_title": "prismaX Queue Notifier",
+    "default_popup": "popup.html"
+  }
+}
