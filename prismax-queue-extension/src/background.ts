@@ -33,10 +33,7 @@ import {loadOptions} from "./extensionOptions";
 
 })();
 
-//initDebuggerIntegration();
-
-
-// ---- Message dispatcher ----
+// Message dispatcher
 
 /*chrome.runtime.onMessage.addListener((message: any, sender) => {
     if (message.type !== "PRISMAX_WS_MESSAGE") return;

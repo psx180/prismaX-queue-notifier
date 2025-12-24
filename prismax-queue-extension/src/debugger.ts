@@ -26,8 +26,6 @@ function isTeleOpPage(url: string): boolean {
     }
 }
 
-// If isPrismaXSocket + prismaXWebSocketUrlsByRequestId were only used in the
-// debugger event handler, they can be removed from this file.
 
 async function attachDebuggerToTab(tabId: number) {
     if (attachedTabs.has(tabId)) {
@@ -105,13 +103,31 @@ export async function startDebugger() {
 
     // Auto-attach when a matching tab is loaded or navigated
     tabsOnUpdatedListener = (tabId, changeInfo, tab) => {
-        if (changeInfo.status === "complete" && tab.url && isTeleOpPage(tab.url)) {
-            console.info("tabs.onUpdated: completed navigation to tele-op page", {
-                tabId,
-                url: tab.url
-            });
-            attachIfMatchingAndEnabled(tabId, tab.url);
+        // Prefer the new URL from changeInfo, fall back to tab.url
+        const url = changeInfo.url ?? tab.url;
+
+        // Ignore if we don't have a URL or it isn't a tele-op page
+        if (!url || !isTeleOpPage(url)) {
+            return;
         }
+
+        // Two cases:
+        // 1) Full page load: status === "complete"
+        // 2) SPA navigation: changeInfo.url is set but status may not be "complete"
+        const isFullLoad = changeInfo.status === "complete";
+        const isSpanav = !!changeInfo.url;
+
+        if (!isFullLoad && !isSpanav) {
+            return;
+        }
+
+        console.info("tabs.onUpdated: navigation to tele-op page detected", {
+            tabId,
+            url,
+            changeInfo
+        });
+
+        attachIfMatchingAndEnabled(tabId, url);
     };
     chrome.tabs.onUpdated.addListener(tabsOnUpdatedListener);
 

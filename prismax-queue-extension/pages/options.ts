@@ -11,14 +11,7 @@ import {
 function restoreOptions() {
     loadOptions()
         .then((options) => {
-            const effective: ExtensionOptions = {
-                ...DEFAULT_OPTIONS,
-                ...options,
-                telegramConfig: {
-                    ...DEFAULT_OPTIONS.telegramConfig,
-                    ...(options.telegramConfig ?? {}),
-                },
-            };
+            const effective: ExtensionOptions = options;
 
             // When to notify (only position threshold now)
             (document.getElementById("positionThreshold") as HTMLInputElement).value =
@@ -40,9 +33,9 @@ function restoreOptions() {
             (document.getElementById("telegramEnabled") as HTMLInputElement).checked =
                 !!effective.telegramEnabled;
             (document.getElementById("telegramBotToken") as HTMLInputElement).value =
-                effective.telegramConfig?.botToken || "";
+                effective.telegramConfig.botToken;
             (document.getElementById("telegramChatId") as HTMLInputElement).value =
-                effective.telegramConfig?.chatId || "";
+                effective.telegramConfig.chatId;
 
             // Apply initial channel disabled styling
             applyChannelDisabledStyling();
@@ -68,13 +61,14 @@ function restoreOptions() {
                 DEFAULT_OPTIONS.discordWebhookUrl || "";
 
             (document.getElementById("telegramBotToken") as HTMLInputElement).value =
-                DEFAULT_OPTIONS.telegramConfig?.botToken || "";
+                DEFAULT_OPTIONS.telegramConfig.botToken;
             (document.getElementById("telegramChatId") as HTMLInputElement).value =
-                DEFAULT_OPTIONS.telegramConfig?.chatId || "";
+                DEFAULT_OPTIONS.telegramConfig.chatId;
 
             applyChannelDisabledStyling();
         });
 }
+
 
 function saveOptions() {
     const positionThresholdInput = document.getElementById(
@@ -154,12 +148,17 @@ function applyChannelDisabledStyling() {
 
     if (chromeCard) {
         chromeCard.classList.toggle("channel-disabled", !chromeEnabled);
+        // Disable all inputs inside the card except the main toggle
+        toggleInputsDisabled(chromeCard, !chromeEnabled, ["chromeEnabled"]);
     }
     if (discordCard) {
         discordCard.classList.toggle("channel-disabled", !discordEnabled);
+        // Disable all inputs inside the card except the main toggle
+        toggleInputsDisabled(discordCard, !discordEnabled, ["discordEnabled"]);
     }
     if (telegramCard) {
         telegramCard.classList.toggle("channel-disabled", !telegramEnabled);
+        // Disable all inputs inside the card except the main toggle
         toggleInputsDisabled(telegramCard, !telegramEnabled, ["telegramEnabled"]);
     }
 }
@@ -181,6 +180,7 @@ function toggleInputsDisabled(
     });
 }
 
+
 // Hook up events once DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
     restoreOptions();
@@ -196,4 +196,3 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("telegramEnabled")?.addEventListener("change", applyChannelDisabledStyling);
 });
 
-// ... existing code ...

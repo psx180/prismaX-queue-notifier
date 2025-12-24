@@ -5,9 +5,9 @@ esbuild.build({
     entryPoints: {
         background: "src/background.ts",
        // contentScript: "src/contentScript.ts",
-        // add popup, options, etc. if you have them:
-        // popup: "src/popup.ts",
-        // options: "src/options.ts",
+
+         popup: "pages/popup.js",
+         options: "pages/options.ts",
     },
     bundle: true,
     format: "esm",        // MV3 background service worker is an ES module

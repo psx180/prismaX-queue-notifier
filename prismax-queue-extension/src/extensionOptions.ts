@@ -2,8 +2,8 @@
 import { z } from "zod";
 
 const telegramConfigSchema = z.object({
-  botToken: z.string().optional().default(""),
-  chatId: z.string().optional().default(""),
+  botToken: z.string().default(""),
+  chatId: z.string().default(""),
 });
 
 const extensionOptionsSchema = z.object({
@@ -16,8 +16,12 @@ const extensionOptionsSchema = z.object({
   telegramEnabled: z.boolean().default(false),
 
   discordWebhookUrl: z.string().optional().default(""),
-  telegramConfig: telegramConfigSchema.optional()//default({}),
+  telegramConfig: telegramConfigSchema.default({
+    botToken: "",
+    chatId: "",
+  }),
 });
+
 
 // Inferred TS types:
 export type TelegramConfig = z.infer<typeof telegramConfigSchema>;
@@ -27,40 +31,39 @@ export type ExtensionOptions = z.infer<typeof extensionOptionsSchema>;
 export const DEFAULT_OPTIONS: ExtensionOptions =
   extensionOptionsSchema.parse({});
 
+
 // Simple normalize using Zod:
-export function normalizeOptions(
-  raw: unknown,
-): ExtensionOptions {
-  // safeParse avoids throwing if storage is badly corrupted
-  const result = extensionOptionsSchema.safeParse(raw);
-  if (result.success) return result.data;
-  // fallback: defaults
-  return DEFAULT_OPTIONS;
+export function normalizeOptions(raw: unknown): ExtensionOptions {
+    const result = extensionOptionsSchema.safeParse(raw);
+    if (result.success) return result.data;
+    return DEFAULT_OPTIONS;
 }
 
-export async function loadOptions(): Promise<ExtensionOptions> {
-  const raw = await new Promise<unknown>((resolve) => {
-    chrome.storage.sync.get(
-      DEFAULT_OPTIONS as unknown as { [key: string]: unknown },
-      (items) => resolve(items),
-    );
-  });
 
-  return normalizeOptions(raw);
+
+export async function loadOptions(): Promise<ExtensionOptions> {
+    const raw = await new Promise<unknown>((resolve) => {
+        chrome.storage.sync.get(
+            DEFAULT_OPTIONS as unknown as { [key: string]: unknown },
+            (items) => resolve(items),
+        );
+    });
+
+    return normalizeOptions(raw);
 }
 
 export async function saveOptions(
-  options: ExtensionOptions,
+    options: ExtensionOptions,
 ): Promise<void> {
-  const normalized = extensionOptionsSchema.parse(options);
-  await new Promise<void>((resolve, reject) => {
-    chrome.storage.sync.set(
-      normalized as unknown as { [key: string]: unknown },
-      () => {
-        const err = chrome.runtime.lastError;
-        if (err) reject(err);
-        else resolve();
-      },
-    );
-  });
+    const normalized = extensionOptionsSchema.parse(options);
+    await new Promise<void>((resolve, reject) => {
+        chrome.storage.sync.set(
+            normalized as unknown as { [key: string]: unknown },
+            () => {
+                const err = chrome.runtime.lastError;
+                if (err) reject(err);
+                else resolve();
+            },
+        );
+    });
 }

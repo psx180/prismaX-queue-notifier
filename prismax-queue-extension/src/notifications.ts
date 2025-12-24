@@ -44,8 +44,8 @@ const discordChannel: NotificationChannel = {
                     content: `**${ctx.title}**\n${ctx.message}\nStatus: ${ctx.me.status}`
                 })
             });
-        } catch {
-            // ignore
+        } catch (e){
+            console.error("Error sending Discord notification", e);
         }
     }
 };
@@ -67,8 +67,8 @@ const telegramChannel: NotificationChannel = {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ chat_id: cfg.chatId, text })
             });
-        } catch {
-            // ignore
+        } catch (e){
+            console.error("Error sending Telegram notification", e);
         }
     }
 };
@@ -77,7 +77,7 @@ const notificationChannels: NotificationChannel[] = [
     chromeChannel,
     discordChannel,
     telegramChannel
-    // future: add more channels here
+    // todo: add more channels here
 ];
 
 export async function sendNotifications(ctx: NotificationContext): Promise<void> {

@@ -90,7 +90,7 @@ async function evaluateAndNotify(
         return;
     }
 
-    // --- "way back" logic for treating it as a new turn ---
+    //  "way back" logic for treating it as a new turn
 
     const hasEverNotified = typeof state.lastNotifiedPosition === "number";
 
